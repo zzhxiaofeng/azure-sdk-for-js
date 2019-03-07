@@ -339,7 +339,8 @@ export interface Server extends TrackedResource {
    */
   replicationRole?: string;
   /**
-   * @member {string} [masterServerId] The master server id of a relica server.
+   * @member {string} [masterServerId] The master server id of a replica
+   * server.
    */
   masterServerId?: string;
   /**
@@ -379,7 +380,7 @@ export interface ServerForCreate {
 /**
  * @interface
  * An interface representing ServerUpdateParameters.
- * Parameters allowd to update for a server.
+ * Parameters allowed to update for a server.
  *
  */
 export interface ServerUpdateParameters {
