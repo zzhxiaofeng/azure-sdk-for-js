@@ -23,8 +23,7 @@ export class WebSiteManagementClientContext extends msRestAzure.AzureServiceClie
   /**
    * Initializes a new instance of the WebSiteManagementClient class.
    * @param credentials Credentials needed for the client to connect to Azure.
-   * @param subscriptionId Your Azure subscription ID. This is a GUID-formatted string (e.g.
-   * 00000000-0000-0000-0000-000000000000).
+   * @param subscriptionId Subscription Id
    * @param [options] The parameter options
    */
   constructor(credentials: msRest.ServiceClientCredentials, subscriptionId: string, options?: Models.WebSiteManagementClientOptions) {
@@ -45,7 +44,7 @@ export class WebSiteManagementClientContext extends msRestAzure.AzureServiceClie
 
     super(credentials, options);
 
-    this.apiVersion = '2018-02-01';
+    this.apiVersion = '3';
     this.acceptLanguage = 'en-US';
     this.longRunningOperationRetryTimeout = 30;
     this.baseUri = options.baseUri || this.baseUri || "https://management.azure.com";
