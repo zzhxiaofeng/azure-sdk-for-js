@@ -201,7 +201,7 @@ export interface Endpoint extends TrackedResource {
   originHostHeader?: string;
   /**
    * @member {string} [originPath] A directory path on the origin that CDN can
-   * use to retreive content from, e.g. contoso.cloudapp.net/originpath.
+   * use to retrieve content from, e.g. contoso.cloudapp.net/originpath.
    */
   originPath?: string;
   /**
@@ -255,7 +255,7 @@ export interface Endpoint extends TrackedResource {
   probePath?: string;
   /**
    * @member {GeoFilter[]} [geoFilters] List of rules defining the user's geo
-   * access within a CDN endpoint. Each geo filter defines an acess rule to a
+   * access within a CDN endpoint. Each geo filter defines an access rule to a
    * specified path or content, e.g. block APAC for path /pictures/
    */
   geoFilters?: GeoFilter[];
@@ -267,7 +267,7 @@ export interface Endpoint extends TrackedResource {
   deliveryPolicy?: EndpointPropertiesUpdateParametersDeliveryPolicy;
   /**
    * @member {string} [hostName] The host name of the endpoint structured as
-   * {endpointName}.{DNSZone}, e.g. consoto.azureedge.net
+   * {endpointName}.{DNSZone}, e.g. contoso.azureedge.net
    * **NOTE: This property will not be serialized. It can only be populated by
    * the server.**
    */
@@ -419,7 +419,7 @@ export interface EndpointUpdateParameters extends BaseResource {
   originHostHeader?: string;
   /**
    * @member {string} [originPath] A directory path on the origin that CDN can
-   * use to retreive content from, e.g. contoso.cloudapp.net/originpath.
+   * use to retrieve content from, e.g. contoso.cloudapp.net/originpath.
    */
   originPath?: string;
   /**
@@ -473,7 +473,7 @@ export interface EndpointUpdateParameters extends BaseResource {
   probePath?: string;
   /**
    * @member {GeoFilter[]} [geoFilters] List of rules defining the user's geo
-   * access within a CDN endpoint. Each geo filter defines an acess rule to a
+   * access within a CDN endpoint. Each geo filter defines an access rule to a
    * specified path or content, e.g. block APAC for path /pictures/
    */
   geoFilters?: GeoFilter[];
@@ -567,8 +567,8 @@ export interface CacheExpirationActionParameters {
    */
   cacheBehavior: CacheBehavior;
   /**
-   * @member {string} [cacheDuration] The duration for which the the content
-   * needs to be cached. Allowed format is [d.]hh:mm:ss
+   * @member {string} [cacheDuration] The duration for which the content needs
+   * to be cached. Allowed format is [d.]hh:mm:ss
    */
   cacheDuration?: string;
 }
@@ -699,7 +699,7 @@ export interface ProxyResource extends Resource {
  * @interface
  * An interface representing CustomDomain.
  * Friendly domain name mapping to the endpoint hostname that the customer
- * provides for branding purposes, e.g. www.consoto.com.
+ * provides for branding purposes, e.g. www.contoso.com.
  *
  * @extends ProxyResource
  */
@@ -767,6 +767,132 @@ export interface CustomDomainParameters {
    * domain name.
    */
   hostName: string;
+}
+
+/**
+ * Contains the possible cases for CustomDomainHttpsParameters.
+ */
+export type CustomDomainHttpsParametersUnion = CustomDomainHttpsParameters | CdnManagedHttpsParameters | UserManagedHttpsParameters;
+
+/**
+ * @interface
+ * An interface representing CustomDomainHttpsParameters.
+ * The JSON object that contains the properties to secure a custom domain.
+ *
+ */
+export interface CustomDomainHttpsParameters {
+  /**
+   * @member {string} certificateSource Polymorphic Discriminator
+   */
+  certificateSource: "CustomDomainHttpsParameters";
+  /**
+   * @member {ProtocolType} protocolType Defines the TLS extension protocol
+   * that is used for secure delivery. Possible values include:
+   * 'ServerNameIndication', 'IPBased'
+   */
+  protocolType: ProtocolType;
+}
+
+/**
+ * @interface
+ * An interface representing CdnCertificateSourceParameters.
+ * Defines the parameters for using CDN managed certificate for securing custom
+ * domain.
+ *
+ */
+export interface CdnCertificateSourceParameters {
+  /**
+   * @member {CertificateType} certificateType Type of certificate used.
+   * Possible values include: 'Shared', 'Dedicated'
+   */
+  certificateType: CertificateType;
+}
+
+/**
+ * @interface
+ * An interface representing CdnManagedHttpsParameters.
+ * Defines the certificate source parameters using CDN managed certificate for
+ * enabling SSL.
+ *
+ */
+export interface CdnManagedHttpsParameters {
+  /**
+   * @member {string} certificateSource Polymorphic Discriminator
+   */
+  certificateSource: "Cdn";
+  /**
+   * @member {ProtocolType} protocolType Defines the TLS extension protocol
+   * that is used for secure delivery. Possible values include:
+   * 'ServerNameIndication', 'IPBased'
+   */
+  protocolType: ProtocolType;
+  /**
+   * @member {CdnCertificateSourceParameters} certificateSourceParameters
+   * Defines the certificate source parameters using CDN managed certificate
+   * for enabling SSL.
+   */
+  certificateSourceParameters: CdnCertificateSourceParameters;
+}
+
+/**
+ * @interface
+ * An interface representing KeyVaultCertificateSourceParameters.
+ * Describes the parameters for using a user's KeyVault certificate for
+ * securing custom domain.
+ *
+ */
+export interface KeyVaultCertificateSourceParameters {
+  /**
+   * @member {string} subscriptionId Subscription Id of the user's Key Vault
+   * containing the SSL certificate
+   */
+  subscriptionId: string;
+  /**
+   * @member {string} resourceGroupName Resource group of the user's Key Vault
+   * containing the SSL certificate
+   */
+  resourceGroupName: string;
+  /**
+   * @member {string} vaultName The name of the user's Key Vault containing the
+   * SSL certificate
+   */
+  vaultName: string;
+  /**
+   * @member {string} secretName The name of Key Vault Secret (representing the
+   * full certificate PFX) in Key Vault.
+   */
+  secretName: string;
+  /**
+   * @member {string} secretVersion The version(GUID) of Key Vault Secret in
+   * Key Vault.
+   */
+  secretVersion: string;
+}
+
+/**
+ * @interface
+ * An interface representing UserManagedHttpsParameters.
+ * Defines the certificate source parameters using user's keyvault certificate
+ * for enabling SSL.
+ *
+ */
+export interface UserManagedHttpsParameters {
+  /**
+   * @member {string} certificateSource Polymorphic Discriminator
+   */
+  certificateSource: "AzureKeyVault";
+  /**
+   * @member {ProtocolType} protocolType Defines the TLS extension protocol
+   * that is used for secure delivery. Possible values include:
+   * 'ServerNameIndication', 'IPBased'
+   */
+  protocolType: ProtocolType;
+  /**
+   * @member {KeyVaultCertificateSourceParameters} certificateSourceParameters
+   * Defines the certificate source parameters using user's keyvault
+   * certificate for enabling SSL.
+   */
+  certificateSourceParameters: KeyVaultCertificateSourceParameters;
 }
 
 /**
@@ -987,7 +1113,7 @@ export interface Operation {
  */
 export interface CidrIpAddress {
   /**
-   * @member {string} [baseIpAddress] Ip adress itself.
+   * @member {string} [baseIpAddress] Ip address itself.
    */
   baseIpAddress?: string;
   /**
@@ -1037,7 +1163,7 @@ export interface EdgeNode extends ProxyResource {
 /**
  * @interface
  * An interface representing ErrorResponse.
- * Error reponse indicates CDN service is not able to process the incoming
+ * Error response indicates CDN service is not able to process the incoming
  * request. The reason is provided in the error message.
  *
  */
@@ -1087,6 +1213,23 @@ export interface ProfilesBeginUpdateOptionalParams extends msRest.RequestOptions
 
 /**
  * @interface
+ * An interface representing CustomDomainsEnableCustomHttpsOptionalParams.
+ * Optional Parameters.
+ *
+ * @extends RequestOptionsBase
+ */
+export interface CustomDomainsEnableCustomHttpsOptionalParams extends msRest.RequestOptionsBase {
+  /**
+   * @member {CustomDomainHttpsParametersUnion} [customDomainHttpsParameters]
+   * The configuration specifying how to enable HTTPS for the custom domain -
+   * using CDN managed certificate or user's own certificate. If not specified,
+   * enabling ssl uses CDN managed certificate by default.
+   */
+  customDomainHttpsParameters?: CustomDomainHttpsParametersUnion;
+}
+
+/**
+ * @interface
  * An interface representing CdnManagementClientOptions.
  * @extends AzureServiceClientOptions
  */
@@ -1102,7 +1245,7 @@ export interface CdnManagementClientOptions extends AzureServiceClientOptions {
  * @interface
  * An interface representing the ProfileListResult.
  * Result of the request to list profiles. It contains a list of profile
- * objects and a URL link to get the the next set of results.
+ * objects and a URL link to get the next set of results.
  *
  * @extends Array<Profile>
  */
@@ -1133,7 +1276,7 @@ export interface ResourceUsageListResult extends Array<ResourceUsage> {
  * @interface
  * An interface representing the EndpointListResult.
  * Result of the request to list endpoints. It contains a list of endpoint
- * objects and a URL link to get the the next set of results.
+ * objects and a URL link to get the next set of results.
  *
  * @extends Array<Endpoint>
  */
@@ -1294,6 +1437,22 @@ export type CustomHttpsProvisioningState = 'Enabling' | 'Enabled' | 'Disabling' 
  * @enum {string}
  */
 export type CustomHttpsProvisioningSubstate = 'SubmittingDomainControlValidationRequest' | 'PendingDomainControlValidationREquestApproval' | 'DomainControlValidationRequestApproved' | 'DomainControlValidationRequestRejected' | 'DomainControlValidationRequestTimedOut' | 'IssuingCertificate' | 'DeployingCertificate' | 'CertificateDeployed' | 'DeletingCertificate' | 'CertificateDeleted';
+
+/**
+ * Defines values for ProtocolType.
+ * Possible values include: 'ServerNameIndication', 'IPBased'
+ * @readonly
+ * @enum {string}
+ */
+export type ProtocolType = 'ServerNameIndication' | 'IPBased';
+
+/**
+ * Defines values for CertificateType.
+ * Possible values include: 'Shared', 'Dedicated'
+ * @readonly
+ * @enum {string}
+ */
+export type CertificateType = 'Shared' | 'Dedicated';
 
 /**
  * Defines values for ResourceType.

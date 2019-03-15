@@ -24,6 +24,7 @@ export {
   ServerPropertiesForDefaultCreate,
   ServerPropertiesForRestore,
   ServerPropertiesForGeoRestore,
+  ServerPropertiesForReplica,
   FirewallRule,
   VirtualNetworkRule,
   Database,
