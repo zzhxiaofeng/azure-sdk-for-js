@@ -9,7 +9,6 @@
  */
 
 export * from "./servers";
-export * from "./replicas";
 export * from "./firewallRules";
 export * from "./virtualNetworkRules";
 export * from "./databases";

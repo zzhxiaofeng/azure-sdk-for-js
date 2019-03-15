@@ -122,7 +122,7 @@ export const KeyCredential: msRest.CompositeMapper = {
       customKeyIdentifier: {
         serializedName: "customKeyIdentifier",
         type: {
-          name: "ByteArray"
+          name: "String"
         }
       }
     },
@@ -162,6 +162,12 @@ export const PasswordCredential: msRest.CompositeMapper = {
         serializedName: "value",
         type: {
           name: "String"
+        }
+      },
+      customKeyIdentifier: {
+        serializedName: "customKeyIdentifier",
+        type: {
+          name: "ByteArray"
         }
       }
     },
@@ -634,6 +640,40 @@ export const Application: msRest.CompositeMapper = {
             type: {
               name: "Composite",
               className: "RequiredResourceAccess",
+              additionalProperties: {
+                type: {
+                  name: "Object"
+                }
+              }
+            }
+          }
+        }
+      },
+      keyCredentials: {
+        serializedName: "keyCredentials",
+        type: {
+          name: "Sequence",
+          element: {
+            type: {
+              name: "Composite",
+              className: "KeyCredential",
+              additionalProperties: {
+                type: {
+                  name: "Object"
+                }
+              }
+            }
+          }
+        }
+      },
+      passwordCredentials: {
+        serializedName: "passwordCredentials",
+        type: {
+          name: "Sequence",
+          element: {
+            type: {
+              name: "Composite",
+              className: "PasswordCredential",
               additionalProperties: {
                 type: {
                   name: "Object"
