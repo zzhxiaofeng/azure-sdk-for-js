@@ -480,7 +480,7 @@ const beginUpdateOperationSpec: msRest.OperationSpec = {
     }
   },
   responses: {
-    201: {
+    200: {
       bodyMapper: Mappers.ComputeResource
     },
     default: {
