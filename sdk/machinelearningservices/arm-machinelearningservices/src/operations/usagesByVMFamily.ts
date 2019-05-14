@@ -89,7 +89,7 @@ export class UsagesByVMFamily {
 const serializer = new msRest.Serializer(Mappers);
 const listOperationSpec: msRest.OperationSpec = {
   httpMethod: "GET",
-  path: "subscriptions/{subscriptionId}/providers/Microsoft.MachineLearningServices/locations/{location}/usagesByVMFamily",
+  path: "subscriptions/{subscriptionId}/providers/Microsoft.MachineLearningServices/locations/{location}/resourcesByVMFamily",
   urlParameters: [
     Parameters.subscriptionId,
     Parameters.location

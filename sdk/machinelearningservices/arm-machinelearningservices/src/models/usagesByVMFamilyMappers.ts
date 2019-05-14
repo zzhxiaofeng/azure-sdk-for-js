@@ -10,7 +10,7 @@ export {
   discriminators,
   CloudError,
   ListUsagesByVMFamilyResult,
-  Usage,
-  UsageByVMFamily,
-  UsageName
+  ResourceUsage,
+  ResourceUsageName,
+  UsageByVMFamily
 } from "../models/mappers";

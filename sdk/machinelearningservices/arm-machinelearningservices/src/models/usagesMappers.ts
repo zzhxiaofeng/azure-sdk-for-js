@@ -11,6 +11,5 @@ export {
   CloudError,
   ListUsagesResult,
   Usage,
-  UsageByVMFamily,
   UsageName
 } from "../models/mappers";
