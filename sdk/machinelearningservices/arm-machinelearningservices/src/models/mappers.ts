@@ -295,52 +295,13 @@ export const Usage: msRest.CompositeMapper = {
   }
 };
 
-export const DummyObject: msRest.CompositeMapper = {
-  serializedName: "DummyObject",
-  type: {
-    name: "Composite",
-    className: "DummyObject",
-    modelProperties: {
-      unit: {
-        readOnly: true,
-        serializedName: "unit",
-        type: {
-          name: "String"
-        }
-      },
-      currentValue: {
-        readOnly: true,
-        serializedName: "currentValue",
-        type: {
-          name: "Number"
-        }
-      },
-      limit: {
-        readOnly: true,
-        serializedName: "limit",
-        type: {
-          name: "Number"
-        }
-      },
-      name: {
-        readOnly: true,
-        serializedName: "name",
-        type: {
-          name: "Composite",
-          className: "UsageName"
-        }
-      }
-    }
-  }
-};
-
 export const UsageByVMFamily: msRest.CompositeMapper = {
   serializedName: "UsageByVMFamily",
   type: {
     name: "Composite",
     className: "UsageByVMFamily",
     modelProperties: {
-      ...DummyObject.type.modelProperties,
+      ...Usage.type.modelProperties,
       resourceGroupName: {
         readOnly: true,
         serializedName: "properties.resourceGroupName",

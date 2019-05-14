@@ -198,35 +198,9 @@ export interface Usage {
 }
 
 /**
- * Describes AML Resource Usage.
- */
-export interface DummyObject {
-  /**
-   * An enum describing the unit of usage measurement. Possible values include: 'Count'
-   * **NOTE: This property will not be serialized. It can only be populated by the server.**
-   */
-  readonly unit?: UsageUnit;
-  /**
-   * The current usage of the resource.
-   * **NOTE: This property will not be serialized. It can only be populated by the server.**
-   */
-  readonly currentValue?: number;
-  /**
-   * The maximum permitted usage of the resource.
-   * **NOTE: This property will not be serialized. It can only be populated by the server.**
-   */
-  readonly limit?: number;
-  /**
-   * The name of the type of usage.
-   * **NOTE: This property will not be serialized. It can only be populated by the server.**
-   */
-  readonly name?: UsageName;
-}
-
-/**
  * Describes Batch AI Resource Usage by VM Family, broken down by Workspace and Cluster usage
  */
-export interface UsageByVMFamily extends DummyObject {
+export interface UsageByVMFamily extends Usage {
   /**
    * The name of the resource group this resource type belongs to
    * **NOTE: This property will not be serialized. It can only be populated by the server.**
