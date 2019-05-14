@@ -9,8 +9,8 @@
 export {
   discriminators,
   CloudError,
+  DummyObject,
   ListUsagesByVMFamilyResult,
-  ResourceUsage,
-  ResourceUsageName,
-  UsageByVMFamily
+  UsageByVMFamily,
+  UsageName
 } from "../models/mappers";
