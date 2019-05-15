@@ -428,17 +428,17 @@ export interface SyncSessionStatus {
    */
   readonly lastSyncPerItemErrorCount?: number;
   /**
-   * Count of persistent files not syncing. Reserved for future use.
+   * Count of persistent files not syncing.
    * **NOTE: This property will not be serialized. It can only be populated by the server.**
    */
   readonly persistentFilesNotSyncingCount?: number;
   /**
-   * Count of transient files not syncing. Reserved for future use.
+   * Count of transient files not syncing.
    * **NOTE: This property will not be serialized. It can only be populated by the server.**
    */
   readonly transientFilesNotSyncingCount?: number;
   /**
-   * Array of per-item errors coming from the last sync session. Reserved for future use.
+   * Array of per-item errors coming from the last sync session.
    * **NOTE: This property will not be serialized. It can only be populated by the server.**
    */
   readonly filesNotSyncingErrors?: FilesNotSyncingError[];
@@ -508,8 +508,7 @@ export interface ServerEndpointSyncStatus {
    */
   readonly syncActivity?: SyncActivity;
   /**
-   * Total count of persistent files not syncing (combined upload + download). Reserved for future
-   * use.
+   * Total count of persistent files not syncing (combined upload + download).
    * **NOTE: This property will not be serialized. It can only be populated by the server.**
    */
   readonly totalPersistentFilesNotSyncingCount?: number;
@@ -544,6 +543,69 @@ export interface ServerEndpointSyncStatus {
    * **NOTE: This property will not be serialized. It can only be populated by the server.**
    */
   readonly offlineDataTransferStatus?: OfflineDataTransferStatus;
+}
+
+/**
+ * Server Endpoint cloud tiering status
+ */
+export interface ServerEndpointCloudTieringStatus {
+  /**
+   * Cloud tiering health status. Possible values include: 'Healthy', 'Error'
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly health?: Health;
+  /**
+   * Last updated timestamp
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly lastUpdatedTimestamp?: Date;
+  /**
+   * Last cloud tiering result (HResult)
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly lastCloudTieringResult?: number;
+}
+
+/**
+ * Files not recalling error object
+ */
+export interface ServerEndpointFilesNotRecallingError {
+  /**
+   * Error code (HResult)
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly errorCode?: number;
+  /**
+   * Count of files not recalling with the specified error code
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly fileCount?: number;
+}
+
+/**
+ * Server Endpoint recall status
+ */
+export interface ServerEndpointRecallStatus {
+  /**
+   * Last updated timestamp
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly lastUpdatedTimestamp?: Date;
+  /**
+   * Egress file count.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly egressFileCount?: number;
+  /**
+   * Egress byte count.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly egressByteCount?: number;
+  /**
+   * Array of errors coming from recall.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly filesNotSyncingErrors?: ServerEndpointFilesNotRecallingError[];
 }
 
 /**
@@ -612,6 +674,27 @@ export interface ServerEndpoint extends ProxyResource {
    * Offline data transfer share name
    */
   offlineDataTransferShareName?: string;
+  /**
+   * Overall health state of the server endpoint. Possible values include: 'Healthy', 'Error',
+   * 'AppearsOffline'
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly health?: Health1;
+  /**
+   * Timestamp of when the 'health' property was last updated.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly lastHealthUpdateTimestamp?: Date;
+  /**
+   * Server Endpoint cloud tiering status
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly cloudTieringStatus?: ServerEndpointCloudTieringStatus;
+  /**
+   * Server Endpoint recall status
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly recallStatus?: ServerEndpointRecallStatus;
 }
 
 /**
@@ -1708,6 +1791,14 @@ export type SyncActivity = 'Upload' | 'Download' | 'UploadAndDownload';
 export type OfflineDataTransferStatus = 'InProgress' | 'Stopping' | 'NotRunning' | 'Complete';
 
 /**
+ * Defines values for Health.
+ * Possible values include: 'Healthy', 'Error'
+ * @readonly
+ * @enum {string}
+ */
+export type Health = 'Healthy' | 'Error';
+
+/**
  * Defines values for CloudTiering2.
  * Possible values include: 'on', 'off'
  * @readonly
@@ -1722,6 +1813,14 @@ export type CloudTiering2 = 'on' | 'off';
  * @enum {string}
  */
 export type OfflineDataTransfer2 = 'on' | 'off';
+
+/**
+ * Defines values for Health1.
+ * Possible values include: 'Healthy', 'Error', 'AppearsOffline'
+ * @readonly
+ * @enum {string}
+ */
+export type Health1 = 'Healthy' | 'Error' | 'AppearsOffline';
 
 /**
  * Defines values for Status.

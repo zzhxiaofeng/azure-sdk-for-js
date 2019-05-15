@@ -673,6 +673,9 @@ export const SyncSessionStatus: msRest.CompositeMapper = {
       lastSyncPerItemErrorCount: {
         readOnly: true,
         serializedName: "lastSyncPerItemErrorCount",
+        constraints: {
+          InclusiveMinimum: 0
+        },
         type: {
           name: "Number"
         }
@@ -680,6 +683,9 @@ export const SyncSessionStatus: msRest.CompositeMapper = {
       persistentFilesNotSyncingCount: {
         readOnly: true,
         serializedName: "persistentFilesNotSyncingCount",
+        constraints: {
+          InclusiveMinimum: 0
+        },
         type: {
           name: "Number"
         }
@@ -687,6 +693,9 @@ export const SyncSessionStatus: msRest.CompositeMapper = {
       transientFilesNotSyncingCount: {
         readOnly: true,
         serializedName: "transientFilesNotSyncingCount",
+        constraints: {
+          InclusiveMinimum: 0
+        },
         type: {
           name: "Number"
         }
@@ -797,6 +806,9 @@ export const ServerEndpointSyncStatus: msRest.CompositeMapper = {
       totalPersistentFilesNotSyncingCount: {
         readOnly: true,
         serializedName: "totalPersistentFilesNotSyncingCount",
+        constraints: {
+          InclusiveMinimum: 0
+        },
         type: {
           name: "Number"
         }
@@ -845,6 +857,105 @@ export const ServerEndpointSyncStatus: msRest.CompositeMapper = {
         serializedName: "offlineDataTransferStatus",
         type: {
           name: "String"
+        }
+      }
+    }
+  }
+};
+
+export const ServerEndpointCloudTieringStatus: msRest.CompositeMapper = {
+  serializedName: "ServerEndpointCloudTieringStatus",
+  type: {
+    name: "Composite",
+    className: "ServerEndpointCloudTieringStatus",
+    modelProperties: {
+      health: {
+        readOnly: true,
+        serializedName: "health",
+        type: {
+          name: "String"
+        }
+      },
+      lastUpdatedTimestamp: {
+        readOnly: true,
+        serializedName: "lastUpdatedTimestamp",
+        type: {
+          name: "DateTime"
+        }
+      },
+      lastCloudTieringResult: {
+        readOnly: true,
+        serializedName: "lastCloudTieringResult",
+        type: {
+          name: "Number"
+        }
+      }
+    }
+  }
+};
+
+export const ServerEndpointFilesNotRecallingError: msRest.CompositeMapper = {
+  serializedName: "ServerEndpointFilesNotRecallingError",
+  type: {
+    name: "Composite",
+    className: "ServerEndpointFilesNotRecallingError",
+    modelProperties: {
+      errorCode: {
+        readOnly: true,
+        serializedName: "errorCode",
+        type: {
+          name: "Number"
+        }
+      },
+      fileCount: {
+        readOnly: true,
+        serializedName: "fileCount",
+        type: {
+          name: "Number"
+        }
+      }
+    }
+  }
+};
+
+export const ServerEndpointRecallStatus: msRest.CompositeMapper = {
+  serializedName: "ServerEndpointRecallStatus",
+  type: {
+    name: "Composite",
+    className: "ServerEndpointRecallStatus",
+    modelProperties: {
+      lastUpdatedTimestamp: {
+        readOnly: true,
+        serializedName: "lastUpdatedTimestamp",
+        type: {
+          name: "DateTime"
+        }
+      },
+      egressFileCount: {
+        readOnly: true,
+        serializedName: "egressFileCount",
+        type: {
+          name: "Number"
+        }
+      },
+      egressByteCount: {
+        readOnly: true,
+        serializedName: "egressByteCount",
+        type: {
+          name: "Number"
+        }
+      },
+      filesNotSyncingErrors: {
+        readOnly: true,
+        serializedName: "filesNotSyncingErrors",
+        type: {
+          name: "Sequence",
+          element: {
+            type: {
+              name: "Composite",
+              className: "ServerEndpointFilesNotRecallingError"
+            }
+          }
         }
       }
     }
@@ -955,6 +1066,36 @@ export const ServerEndpoint: msRest.CompositeMapper = {
         serializedName: "properties.offlineDataTransferShareName",
         type: {
           name: "String"
+        }
+      },
+      health: {
+        readOnly: true,
+        serializedName: "properties.health",
+        type: {
+          name: "String"
+        }
+      },
+      lastHealthUpdateTimestamp: {
+        readOnly: true,
+        serializedName: "properties.lastHealthUpdateTimestamp",
+        type: {
+          name: "DateTime"
+        }
+      },
+      cloudTieringStatus: {
+        readOnly: true,
+        serializedName: "properties.cloudTieringStatus",
+        type: {
+          name: "Composite",
+          className: "ServerEndpointCloudTieringStatus"
+        }
+      },
+      recallStatus: {
+        readOnly: true,
+        serializedName: "properties.recallStatus",
+        type: {
+          name: "Composite",
+          className: "ServerEndpointRecallStatus"
         }
       }
     }
