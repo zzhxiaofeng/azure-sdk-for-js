@@ -8,7 +8,7 @@ import {
   RequestPolicy,
   RequestPolicyOptions,
   WebResource
-} from "@azure/ms-rest-js";
+} from "@azure/core-http";
 
 import { RequestLogOptions } from "../LoggingPolicyFactory";
 import { HTTPURLConnection, URLConstants } from "../utils/constants";

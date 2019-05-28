@@ -1,4 +1,4 @@
-import { URLBuilder } from "@azure/ms-rest-js";
+import { URLBuilder } from "@azure/core-http";
 import * as assert from "assert";
 
 import { RestError, StorageClient } from "../src";

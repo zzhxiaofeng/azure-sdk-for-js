@@ -8,7 +8,7 @@
  * regenerated.
  */
 
-import * as msRest from "@azure/ms-rest-js";
+import * as msRest from "@azure/core-http";
 import * as Models from "../models";
 import * as Mappers from "../models/messagesMappers";
 import * as Parameters from "../models/parameters";

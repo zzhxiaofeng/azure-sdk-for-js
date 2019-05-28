@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { URLBuilder } from "@azure/ms-rest-js";
+import { URLBuilder } from "@azure/core-http";
 
 /**
  * Append a string to URL path. Will remove duplicated "/" in front of the string

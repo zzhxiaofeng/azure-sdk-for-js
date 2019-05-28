@@ -8,7 +8,7 @@
  * regenerated.
  */
 
-import * as msRest from "@azure/ms-rest-js";
+import * as msRest from "@azure/core-http";
 
 const packageName = "azure-storage-queue";
 const packageVersion = "1.0.0";

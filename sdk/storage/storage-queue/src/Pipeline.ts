@@ -14,7 +14,7 @@ import {
   RequestPolicyOptions,
   ServiceClientOptions,
   WebResource
-} from "@azure/ms-rest-js";
+} from "@azure/core-http";
 
 // Export following interfaces and types for customers who want to implement their
 // own RequestPolicy or HTTPClient

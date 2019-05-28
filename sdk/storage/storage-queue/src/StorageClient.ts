@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { deserializationPolicy, RequestPolicyFactory } from "@azure/ms-rest-js";
+import { deserializationPolicy, RequestPolicyFactory } from "@azure/core-http";
 
 import { BrowserPolicyFactory } from "./BrowserPolicyFactory";
 import { Credential } from "./credentials/Credential";
