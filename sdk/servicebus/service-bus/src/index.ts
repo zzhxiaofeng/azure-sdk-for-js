@@ -35,3 +35,48 @@ export {
   ReceiveMode
 } from "./serviceBusMessage";
 export { Delivery, WebSocketImpl } from "rhea-promise";
+
+export { HttpOperationResponse } from "@azure/core-http";
+
+export {
+  ServiceBusAtomManagementClient,
+  ServiceBusAtomManagementClientOptions,
+  ListRequestOptions,
+  QueueResponse,
+  CreateQueueResponse,
+  GetQueueResponse,
+  ListQueuesResponse,
+  UpdateQueueResponse,
+  DeleteQueueResponse,
+  TopicResponse,
+  CreateTopicResponse,
+  GetTopicResponse,
+  ListTopicsResponse,
+  UpdateTopicResponse,
+  DeleteTopicResponse,
+  SubscriptionResponse,
+  CreateSubscriptionResponse,
+  GetSubscriptionResponse,
+  ListSubscriptionsResponse,
+  UpdateSubscriptionResponse,
+  DeleteSubscriptionResponse,
+  RuleResponse,
+  CreateRuleResponse,
+  GetRuleResponse,
+  ListRulesResponse,
+  UpdateRuleResponse,
+  DeleteRuleResponse
+} from "./serviceBusAtomManagementClient";
+
+export { Queue, QueueOptions } from "./serializers/queueResourceSerializer";
+export { Topic, TopicOptions } from "./serializers/topicResourceSerializer";
+export { Subscription, SubscriptionOptions } from "./serializers/subscriptionResourceSerializer";
+export {
+  Rule,
+  RuleOptions,
+  SqlFilter,
+  SqlParameter,
+  SqlAction
+} from "./serializers/ruleResourceSerializer";
+
+export { CountDetails, AuthorizationRule } from "./util/utils";

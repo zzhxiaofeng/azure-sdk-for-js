@@ -1,6 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { Constants } from "./constants";
+
+// tslint:disable-next-line:no-null-keyword
+const doc = document.implementation.createDocument(null, null, null);
+
 const parser = new DOMParser();
 export function parseXML(str: string): Promise<any> {
   try {
@@ -94,17 +99,7 @@ function domToObject(node: Node): any {
   return result;
 }
 
-// tslint:disable-next-line:no-null-keyword
-const doc = document.implementation.createDocument(null, null, null);
 const serializer = new XMLSerializer();
-
-export function stringifyXML(obj: any, opts?: { rootName?: string }) {
-  const rootName = (opts && opts.rootName) || "root";
-  const dom = buildNode(obj, rootName)[0];
-  return (
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + serializer.serializeToString(dom)
-  );
-}
 
 function buildAttributes(attrs: { [key: string]: { toString(): string } }): Attr[] {
   const result = [];
@@ -117,9 +112,14 @@ function buildAttributes(attrs: { [key: string]: { toString(): string } }): Attr
 }
 
 function buildNode(obj: any, elementName: string): Node[] {
-  if (typeof obj === "string" || typeof obj === "number" || typeof obj === "boolean") {
+  if (
+    obj == undefined ||
+    typeof obj === "string" ||
+    typeof obj === "number" ||
+    typeof obj === "boolean"
+  ) {
     const elem = doc.createElement(elementName);
-    elem.textContent = obj.toString();
+    elem.textContent = obj == undefined ? undefined : obj.toString();
     return [elem];
   } else if (Array.isArray(obj)) {
     const result = [];
@@ -146,4 +146,34 @@ function buildNode(obj: any, elementName: string): Node[] {
   } else {
     throw new Error(`Illegal value passed to buildObject: ${obj}`);
   }
+}
+
+export function convertAtomXmlToJson(body: string): any {
+  const dom = parser.parseFromString(body, "text/xml");
+  throwIfError(dom);
+  const result = domToObject(dom);
+  return result;
+}
+
+/**
+ * @param {object} content The content payload as it is to be serialized. It should include any root node(s).
+ */
+export function convertJsonToAtomXml(content: any): string {
+  content[Constants.XML_METADATA_MARKER] = { type: "application/xml" };
+  const res = buildNode(content, "content");
+  const dom = res[0];
+
+  const result =
+    `<?xml version="1.0" encoding="utf-8" standalone="yes"?><entry xmlns="http://www.w3.org/2005/Atom"><updated>${new Date().toISOString()}</updated>` +
+    serializer.serializeToString(dom) +
+    `</entry>`;
+  return result;
+}
+
+export function stringifyXML(obj: any, opts?: { rootName?: string }) {
+  const rootName = (opts && opts.rootName) || "root";
+  const dom = buildNode(obj, rootName)[0];
+  return (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + serializer.serializeToString(dom)
+  );
 }
