@@ -17,8 +17,7 @@ import { ServiceClientOptions } from '@azure/core-http';
 import { TokenCredential } from '@azure/core-http';
 
 // @public
-export interface BackupKeyOptions {
-    requestOptions?: coreHttp.RequestOptionsBase;
+export interface BackupKeyOptions extends coreHttp.RequestOptionsBase {
 }
 
 // @public
@@ -28,14 +27,12 @@ export interface CreateEcKeyOptions extends CreateKeyOptions {
 }
 
 // @public
-export interface CreateKeyOptions {
+export interface CreateKeyOptions extends coreHttp.RequestOptionsBase {
     enabled?: boolean;
     expiresOn?: Date;
     keyOps?: JsonWebKeyOperation[];
-    // (undocumented)
     keySize?: number;
     notBefore?: Date;
-    requestOptions?: coreHttp.RequestOptionsBase;
     tags?: {
         [propertyName: string]: string;
     };
@@ -96,11 +93,6 @@ export interface DeletedKey {
 }
 
 // @public
-export interface DeletedKeyOptions {
-    requestOptions?: coreHttp.RequestOptionsBase;
-}
-
-// @public
 export interface DeleteKeyPollOperationState extends PollOperationState<DeletedKey> {
     // Warning: (ae-forgotten-export) The symbol "KeyClientInterface" needs to be exported by the entry point index.d.ts
     // 
@@ -127,23 +119,24 @@ export interface EncryptResult {
 }
 
 // @public
-export interface GetKeyOptions {
-    requestOptions?: coreHttp.RequestOptionsBase;
+export interface GetDeletedKeyOptions extends coreHttp.RequestOptionsBase {
+}
+
+// @public
+export interface GetKeyOptions extends coreHttp.RequestOptionsBase {
     version?: string;
 }
 
 // @public
-export interface GetKeysOptions {
-    requestOptions?: coreHttp.RequestOptionsBase;
+export interface GetKeysOptions extends coreHttp.RequestOptionsBase {
 }
 
 // @public
-export interface ImportKeyOptions {
+export interface ImportKeyOptions extends coreHttp.RequestOptionsBase {
     enabled?: boolean;
     expiresOn?: Date;
     hardwareProtected?: boolean;
     notBefore?: Date;
-    requestOptions?: coreHttp.RequestOptionsBase;
     tags?: {
         [propertyName: string]: string;
     };
@@ -193,23 +186,22 @@ export class KeyClient {
     createRsaKey(name: string, options?: CreateRsaKeyOptions): Promise<KeyVaultKey>;
     protected readonly credential: TokenCredential;
     static getDefaultPipeline(credential: TokenCredential, pipelineOptions?: NewPipelineOptions): ServiceClientOptions;
-    getDeletedKey(name: string, options?: DeletedKeyOptions): Promise<DeletedKey>;
+    getDeletedKey(name: string, options?: GetDeletedKeyOptions): Promise<DeletedKey>;
     getKey(name: string, options?: GetKeyOptions): Promise<KeyVaultKey>;
     importKey(name: string, key: JsonWebKey, options: ImportKeyOptions): Promise<KeyVaultKey>;
-    listDeletedKeys(options?: GetKeysOptions): PagedAsyncIterableIterator<DeletedKey, DeletedKey[]>;
+    listPropertiesOfDeletedKeys(options?: GetKeysOptions): PagedAsyncIterableIterator<KeyProperties, KeyProperties[]>;
     listPropertiesOfKeys(options?: GetKeysOptions): PagedAsyncIterableIterator<KeyProperties, KeyProperties[]>;
     listPropertiesOfKeyVersions(name: string, options?: GetKeysOptions): PagedAsyncIterableIterator<KeyProperties, KeyProperties[]>;
     readonly pipeline: ServiceClientOptions;
-    purgeDeletedKey(name: string, options?: DeletedKeyOptions): Promise<void>;
-    restoreKeyBackup(backup: Uint8Array, options?: BackupKeyOptions): Promise<KeyVaultKey>;
+    purgeDeletedKey(name: string, options?: PurgeDeletedKeyOptions): Promise<void>;
+    restoreKeyBackup(backup: Uint8Array, options?: RestoreKeyBackupOptions): Promise<KeyVaultKey>;
     updateKey(name: string, keyVersion: string, options?: UpdateKeyOptions): Promise<KeyVaultKey>;
     readonly vaultEndpoint: string;
 }
 
 // @public
-export interface KeyPollerOptions {
+export interface KeyPollerOptions extends coreHttp.RequestOptionsBase {
     intervalInMs?: number;
-    requestOptions?: coreHttp.RequestOptionsBase;
     resumeFrom?: string;
 }
 
@@ -273,6 +265,14 @@ export interface ProxyOptions {
 }
 
 // @public
+export interface PurgeDeletedKeyOptions extends coreHttp.RequestOptionsBase {
+}
+
+// @public
+export interface RecoverDeletedKeyOptions extends coreHttp.RequestOptionsBase {
+}
+
+// @public
 export interface RecoverDeletedKeyPollOperationState extends PollOperationState<KeyVaultKey> {
     // (undocumented)
     client: KeyClientInterface;
@@ -280,6 +280,10 @@ export interface RecoverDeletedKeyPollOperationState extends PollOperationState<
     name: string;
     // (undocumented)
     requestOptions?: RequestOptionsBase;
+}
+
+// @public
+export interface RestoreKeyBackupOptions extends coreHttp.RequestOptionsBase {
 }
 
 // @public
@@ -309,12 +313,11 @@ export interface UnwrapResult {
 }
 
 // @public
-export interface UpdateKeyOptions {
+export interface UpdateKeyOptions extends coreHttp.RequestOptionsBase {
     enabled?: boolean;
     expiresOn?: Date;
     keyOps?: JsonWebKeyOperation[];
     notBefore?: Date;
-    requestOptions?: coreHttp.RequestOptionsBase;
     tags?: {
         [propertyName: string]: string;
     };

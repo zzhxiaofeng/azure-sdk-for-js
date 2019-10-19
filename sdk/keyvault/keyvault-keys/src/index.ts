@@ -71,7 +71,10 @@ import {
   CreateKeyOptions,
   CreateRsaKeyOptions,
   DeletedKey,
-  DeletedKeyOptions,
+  GetDeletedKeyOptions,
+  PurgeDeletedKeyOptions,
+  RecoverDeletedKeyOptions,
+  RestoreKeyBackupOptions,
   GetKeyOptions,
   ImportKeyOptions,
   KeyClientInterface,
@@ -106,7 +109,10 @@ export {
   DecryptResult,
   DeleteKeyPollOperationState,
   DeletedKey,
-  DeletedKeyOptions,
+  GetDeletedKeyOptions,
+  PurgeDeletedKeyOptions,
+  RecoverDeletedKeyOptions,
+  RestoreKeyBackupOptions,
   DeletionRecoveryLevel,
   EncryptOptions,
   EncryptResult,
@@ -260,7 +266,7 @@ export class KeyClient {
     this.client = new KeyVaultClient(credential, SERVICE_API_VERSION, this.pipeline);
   }
 
-  private async deleteKey(name: string, options?: DeletedKeyOptions): Promise<DeletedKey> {
+  private async deleteKey(name: string, options?: GetDeletedKeyOptions): Promise<DeletedKey> {
     const requestOptions = (options && options.requestOptions) || {};
     const span = this.createSpan("deleteKey", requestOptions);
 
@@ -278,7 +284,7 @@ export class KeyClient {
     return this.getKeyFromKeyBundle(response);
   }
 
-  private async recoverDeletedKey(name: string, options?: DeletedKeyOptions): Promise<KeyVaultKey> {
+  private async recoverDeletedKey(name: string, options?: RecoverDeletedKeyOptions): Promise<KeyVaultKey> {
     const requestOptions = (options && options.requestOptions) || {};
     const span = this.createSpan("recoverDeletedKey", requestOptions);
 
@@ -345,14 +351,12 @@ export class KeyClient {
       };
       const unflattenedOptions = {
         ...options,
-        ...(options.requestOptions ? options.requestOptions : {}),
         keyAttributes: unflattenedProperties
       };
 
       delete unflattenedOptions.enabled;
       delete unflattenedOptions.notBefore;
       delete unflattenedOptions.expiresOn;
-      delete unflattenedOptions.requestOptions;
 
       const span = this.createSpan("createKey", unflattenedOptions);
 
@@ -399,14 +403,12 @@ export class KeyClient {
       };
       const unflattenedOptions = {
         ...options,
-        ...(options.requestOptions ? options.requestOptions : {}),
         keyAttributes: unflattenedProperties
       };
 
       delete unflattenedOptions.enabled;
       delete unflattenedOptions.notBefore;
       delete unflattenedOptions.expiresOn;
-      delete unflattenedOptions.requestOptions;
 
       const span = this.createSpan("createEcKey", unflattenedOptions);
 
@@ -453,14 +455,12 @@ export class KeyClient {
       };
       const unflattenedOptions = {
         ...options,
-        ...(options.requestOptions ? options.requestOptions : {}),
         keyAttributes: unflattenedProperties
       };
 
       delete unflattenedOptions.enabled;
       delete unflattenedOptions.notBefore;
       delete unflattenedOptions.expiresOn;
-      delete unflattenedOptions.requestOptions;
 
       const span = this.createSpan("createRsaKey", unflattenedOptions);
 
@@ -515,13 +515,11 @@ export class KeyClient {
 
       const unflattenedOptions = {
         ...options,
-        ...(options.requestOptions ? options.requestOptions : {}),
         keyAttributes: unflattenedProperties
       };
       delete unflattenedOptions.enabled;
       delete unflattenedOptions.notBefore;
       delete unflattenedOptions.expiresOn;
-      delete unflattenedOptions.requestOptions;
       delete unflattenedOptions.hardwareProtected;
 
       const span = this.createSpan("importKey", unflattenedOptions);
@@ -574,12 +572,14 @@ export class KeyClient {
    */
   public async beginDeleteKey(
     name: string,
-    options?: KeyPollerOptions
+		options: KeyPollerOptions = {}
   ): Promise<PollerLike<PollOperationState<DeletedKey>, DeletedKey>> {
     const poller = new DeleteKeyPoller({
       name,
       client: this.pollerClient,
-      ...options
+      intervalInMs: options.intervalInMs,
+      resumeFrom: options.resumeFrom,
+      requestOptions: options as RequestOptionsBase
     });
 
     // This will initialize the poller's operation (the deletion of the key).
@@ -618,13 +618,11 @@ export class KeyClient {
       };
       const unflattenedOptions = {
         ...options,
-        ...(options.requestOptions ? options.requestOptions : {}),
         keyAttributes: unflattenedProperties
       };
       delete unflattenedOptions.enabled;
       delete unflattenedOptions.notBefore;
       delete unflattenedOptions.expiresOn;
-      delete unflattenedOptions.requestOptions;
 
       const span = this.createSpan("updateKey", unflattenedOptions);
 
@@ -662,7 +660,7 @@ export class KeyClient {
    * @param [options] The optional parameters
    */
   public async getKey(name: string, options?: GetKeyOptions): Promise<KeyVaultKey> {
-    const requestOptions = (options && options.requestOptions) || {};
+    const requestOptions = options as RequestOptionsBase;
     const span = this.createSpan("getKey", requestOptions);
 
     let response: GetKeyResponse;
@@ -693,8 +691,8 @@ export class KeyClient {
    * @param name The name of the key.
    * @param [options] The optional parameters
    */
-  public async getDeletedKey(name: string, options?: DeletedKeyOptions): Promise<DeletedKey> {
-    const requestOptions = (options && options.requestOptions) || {};
+  public async getDeletedKey(name: string, options?: GetDeletedKeyOptions): Promise<DeletedKey> {
+    const requestOptions = options as RequestOptionsBase;
     const span = this.createSpan("getDeletedKey", requestOptions);
 
     let response: GetDeletedKeyResponse;
@@ -727,8 +725,8 @@ export class KeyClient {
    * @param name The name of the key.
    * @param [options] The optional parameters
    */
-  public async purgeDeletedKey(name: string, options?: DeletedKeyOptions): Promise<void> {
-    const requestOptions = (options && options.requestOptions) || {};
+  public async purgeDeletedKey(name: string, options?: PurgeDeletedKeyOptions): Promise<void> {
+    const requestOptions = options as RequestOptionsBase;
     const span = this.createSpan("purgeDeletedKey", requestOptions);
 
     try {
@@ -773,12 +771,14 @@ export class KeyClient {
    */
   public async beginRecoverDeletedKey(
     name: string,
-    options?: KeyPollerOptions
+		options: KeyPollerOptions = {}
   ): Promise<PollerLike<PollOperationState<DeletedKey>, DeletedKey>> {
     const poller = new RecoverDeletedKeyPoller({
       name,
       client: this.pollerClient,
-      ...options
+      intervalInMs: options.intervalInMs,
+      resumeFrom: options.resumeFrom,
+      requestOptions: options as RequestOptionsBase
     });
     // This will initialize the poller's operation (the deletion of the key).
     await poller.poll();
@@ -802,7 +802,7 @@ export class KeyClient {
     name: string,
     options?: BackupKeyOptions
   ): Promise<Uint8Array | undefined> {
-    const requestOptions = (options && options.requestOptions) || {};
+    const requestOptions = options as RequestOptionsBase;
     const span = this.createSpan("backupKey", requestOptions);
 
     let response: BackupKeyResponse;
@@ -836,9 +836,9 @@ export class KeyClient {
    */
   public async restoreKeyBackup(
     backup: Uint8Array,
-    options?: BackupKeyOptions
+    options?: RestoreKeyBackupOptions
   ): Promise<KeyVaultKey> {
-    const requestOptions = (options && options.requestOptions) || {};
+    const requestOptions = options as RequestOptionsBase;
     const span = this.createSpan("restoreKeyBackup", requestOptions);
 
     let response: RestoreKeyResponse;
@@ -863,7 +863,7 @@ export class KeyClient {
     if (continuationState.continuationToken == null) {
       const optionsComplete: KeyVaultClientGetKeysOptionalParams = {
         maxresults: continuationState.maxPageSize,
-        ...(options && options.requestOptions ? options.requestOptions : {})
+        ...options,
       };
       const currentSetResponse = await this.client.getKeyVersions(
         this.vaultEndpoint,
@@ -922,10 +922,11 @@ export class KeyClient {
     name: string,
     options: ListKeysOptions = {}
   ): PagedAsyncIterableIterator<KeyProperties, KeyProperties[]> {
-    const span = this.createSpan("listPropertiesOfKeyVersions", options.requestOptions);
+    const requestOptions = options as RequestOptionsBase;
+    const span = this.createSpan("listPropertiesOfKeyVersions", requestOptions);
     const updatedOptions: ListKeysOptions = {
       ...options,
-      requestOptions: this.setParentSpan(span, options.requestOptions)
+      ...this.setParentSpan(span, requestOptions)
     };
 
     const iter = this.listPropertiesOfKeyVersionsAll(name, updatedOptions);
@@ -950,7 +951,7 @@ export class KeyClient {
     if (continuationState.continuationToken == null) {
       const optionsComplete: KeyVaultClientGetKeysOptionalParams = {
         maxresults: continuationState.maxPageSize,
-        ...(options && options.requestOptions ? options.requestOptions : {})
+        ...options,
       };
       const currentSetResponse = await this.client.getKeys(this.vaultEndpoint, optionsComplete);
       continuationState.continuationToken = currentSetResponse.nextLink;
@@ -1002,10 +1003,10 @@ export class KeyClient {
   public listPropertiesOfKeys(
     options: ListKeysOptions = {}
   ): PagedAsyncIterableIterator<KeyProperties, KeyProperties[]> {
-    const span = this.createSpan("listPropertiesOfKeys", options.requestOptions);
+    const span = this.createSpan("listPropertiesOfKeys", options);
     const updatedOptions: ListKeysOptions = {
       ...options,
-      requestOptions: this.setParentSpan(span, options.requestOptions)
+      ...this.setParentSpan(span, options)
     };
 
     const iter = this.listPropertiesOfKeysAll(updatedOptions);
@@ -1023,14 +1024,14 @@ export class KeyClient {
     };
   }
 
-  private async *listDeletedKeysPage(
+  private async *listPropertiesOfDeletedKeysPage(
     continuationState: PageSettings,
     options?: ListKeysOptions
-  ): AsyncIterableIterator<DeletedKey[]> {
+  ): AsyncIterableIterator<KeyProperties[]> {
     if (continuationState.continuationToken == null) {
       const optionsComplete: KeyVaultClientGetKeysOptionalParams = {
         maxresults: continuationState.maxPageSize,
-        ...(options && options.requestOptions ? options.requestOptions : {})
+        ...options,
       };
       const currentSetResponse = await this.client.getDeletedKeys(
         this.vaultEndpoint,
@@ -1038,7 +1039,7 @@ export class KeyClient {
       );
       continuationState.continuationToken = currentSetResponse.nextLink;
       if (currentSetResponse.value) {
-        yield currentSetResponse.value.map(this.getKeyFromKeyBundle);
+        yield currentSetResponse.value.map(this.getKeyPropertiesFromKeyItem);
       }
     }
     while (continuationState.continuationToken) {
@@ -1048,17 +1049,17 @@ export class KeyClient {
       );
       continuationState.continuationToken = currentSetResponse.nextLink;
       if (currentSetResponse.value) {
-        yield currentSetResponse.value.map(this.getKeyFromKeyBundle);
+        yield currentSetResponse.value.map(this.getKeyPropertiesFromKeyItem);
       } else {
         break;
       }
     }
   }
 
-  private async *listDeletedKeysAll(options?: ListKeysOptions): AsyncIterableIterator<DeletedKey> {
+  private async *listPropertiesOfDeletedKeysAll(options?: ListKeysOptions): AsyncIterableIterator<KeyProperties> {
     const f = {};
 
-    for await (const page of this.listDeletedKeysPage(f, options)) {
+    for await (const page of this.listPropertiesOfDeletedKeysPage(f, options)) {
       for (const item of page) {
         yield item;
       }
@@ -1072,7 +1073,7 @@ export class KeyClient {
    * Example usage:
    * ```ts
    * let client = new KeyClient(url, credentials);
-   * for await (const keyAttr of client.listDeletedKeys()) {
+   * for await (const keyAttr of client.listPropertiesOfDeletedKeys()) {
    *   const deletedKey = await client.getKey(keyAttr.name);
    *   console.log("deleted key: ", deletedKey);
    * }
@@ -1080,17 +1081,18 @@ export class KeyClient {
    * @summary List all keys in the vault
    * @param [options] The optional parameters
    */
-  public listDeletedKeys(
+  public listPropertiesOfDeletedKeys(
     options: ListKeysOptions = {}
-  ): PagedAsyncIterableIterator<DeletedKey, DeletedKey[]> {
-    const span = this.createSpan("listDeletedKeys", options.requestOptions);
+  ): PagedAsyncIterableIterator<KeyProperties, KeyProperties[]> {
+    const requestOptions = options as RequestOptionsBase;
+    const span = this.createSpan("listPropertiesOfDeletedKeys", requestOptions);
 
     const updatedOptions: ListKeysOptions = {
       ...options,
-      requestOptions: this.setParentSpan(span, options.requestOptions)
+      ...this.setParentSpan(span, options)
     };
 
-    const iter = this.listDeletedKeysAll(updatedOptions);
+    const iter = this.listPropertiesOfDeletedKeysAll(updatedOptions);
 
     span.end();
     return {
@@ -1100,7 +1102,7 @@ export class KeyClient {
       [Symbol.asyncIterator]() {
         return this;
       },
-      byPage: (settings: PageSettings = {}) => this.listDeletedKeysPage(settings, updatedOptions)
+      byPage: (settings: PageSettings = {}) => this.listPropertiesOfDeletedKeysPage(settings, updatedOptions)
     };
   }
 
