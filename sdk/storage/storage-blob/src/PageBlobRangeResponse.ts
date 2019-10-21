@@ -1,10 +1,5 @@
 import { HttpResponse } from "@azure/core-http";
-import {
-  PageBlobGetPageRangesHeaders,
-  PageBlobGetPageRangesDiffHeaders,
-  PageBlobGetPageRangesResponse as PageBlobGetPageRangesResponseModel,
-  PageBlobGetPageRangesDiffResponse as PageBlobGetPageRangesDiffResponseModel
-} from "./generatedModels";
+import * as Models from "./generated/src/models";
 import { Range } from "./Range";
 
 export interface PageList {
@@ -12,7 +7,9 @@ export interface PageList {
   clearRange?: Range[];
 }
 
-export interface PageBlobGetPageRangesResponse extends PageList, PageBlobGetPageRangesHeaders {
+export interface PageBlobGetPageRangesResponse
+  extends PageList,
+    Models.PageBlobGetPageRangesHeaders {
   /**
    * The underlying HTTP response.
    */
@@ -20,7 +17,7 @@ export interface PageBlobGetPageRangesResponse extends PageList, PageBlobGetPage
     /**
      * The parsed HTTP response headers.
      */
-    parsedHeaders: PageBlobGetPageRangesHeaders;
+    parsedHeaders: Models.PageBlobGetPageRangesHeaders;
 
     /**
      * The response body as text (string format)
@@ -39,7 +36,7 @@ export interface PageBlobGetPageRangesResponse extends PageList, PageBlobGetPage
  */
 export interface PageBlobGetPageRangesDiffResponse
   extends PageList,
-    PageBlobGetPageRangesDiffHeaders {
+    Models.PageBlobGetPageRangesDiffHeaders {
   /**
    * The underlying HTTP response.
    */
@@ -47,7 +44,7 @@ export interface PageBlobGetPageRangesDiffResponse
     /**
      * The parsed HTTP response headers.
      */
-    parsedHeaders: PageBlobGetPageRangesDiffHeaders;
+    parsedHeaders: Models.PageBlobGetPageRangesDiffHeaders;
 
     /**
      * The response body as text (string format)
@@ -68,7 +65,7 @@ export interface PageBlobGetPageRangesDiffResponse
  * @param response Model PageBlob Range response
  */
 export function rangeResponseFromModel(
-  response: PageBlobGetPageRangesResponseModel | PageBlobGetPageRangesDiffResponseModel
+  response: Models.PageBlobGetPageRangesResponse | Models.PageBlobGetPageRangesDiffResponse
 ): PageBlobGetPageRangesResponse | PageBlobGetPageRangesDiffResponse {
   const pageRange = (response._response.parsedBody.pageRange || []).map((x) => ({
     offset: x.start,
