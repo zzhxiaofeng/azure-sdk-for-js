@@ -1,5 +1,6 @@
 parameters:
   RunUnitTests: false
+  RunAnalyze: false
   Artifacts: []
   ServiceDirectory: not-specified
   DocDirectory: ""
@@ -118,100 +119,101 @@ jobs:
           artifactName: documentation
           path: $(Build.ArtifactStagingDirectory)/Documentation
 
-  - job: "Analyze"
-    dependsOn: "Build"
-    variables:
-      - template: ../variables/globals.yml
+  - ${{ if eq(parameters.RunAnalyze, 'true') }}:
+      - job: "Analyze"
+        dependsOn: "Build"
+        variables:
+          - template: ../variables/globals.yml
 
-    pool:
-      vmImage: "$(OSVmImage)"
+        pool:
+          vmImage: "$(OSVmImage)"
 
-    steps:
-      - template: ../steps/common.yml
+        steps:
+          - template: ../steps/common.yml
 
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          buildType: "current"
-          artifactName: packages
-          itemPattern: "*.tgz"
-          targetPath: "$(Agent.TempDirectory)/packagesCurrent"
-        displayName: "Download Current Build artifacts"
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: "current"
+              artifactName: packages
+              itemPattern: "*.tgz"
+              targetPath: "$(Agent.TempDirectory)/packagesCurrent"
+            displayName: "Download Current Build artifacts"
 
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          buildType: "specific"
-          project: "29ec6040-b234-4e31-b139-33dc4287b756" #guid for public project
-          definition: 614 #system.definitionId for js - client -ci
-          buildVersionToDownload: "latest"
-          branchName: "master"
-          artifactName: packages
-          itemPattern: "*.tgz"
-          targetPath: "$(Agent.TempDirectory)/packagesMaster"
-        displayName: "Download Latest Master (PipelineTask) artifacts"
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: "specific"
+              project: "29ec6040-b234-4e31-b139-33dc4287b756" #guid for public project
+              definition: 614 #system.definitionId for js - client -ci
+              buildVersionToDownload: "latest"
+              branchName: "master"
+              artifactName: packages
+              itemPattern: "*.tgz"
+              targetPath: "$(Agent.TempDirectory)/packagesMaster"
+            displayName: "Download Latest Master (PipelineTask) artifacts"
 
-      - pwsh: |
-          eng/tools/compare-packages.ps1 "$(Agent.TempDirectory)/packagesMaster" "$(Agent.TempDirectory)/packagesCurrent" "$(Build.BuildNumber)" "$(System.ArtifactsDirectory)"
-        displayName: "Diff Generated Packages"
-        errorActionPreference: "continue"
+          - pwsh: |
+              eng/tools/compare-packages.ps1 "$(Agent.TempDirectory)/packagesMaster" "$(Agent.TempDirectory)/packagesCurrent" "$(Build.BuildNumber)" "$(System.ArtifactsDirectory)"
+            displayName: "Diff Generated Packages"
+            errorActionPreference: "continue"
 
-      - task: PublishPipelineArtifact@1
-        condition: succeededOrFailed()
-        displayName: "Publish Report Artifacts"
-        inputs:
-          artifactName: package-diffs
-          path: $(Build.ArtifactStagingDirectory)
+          - task: PublishPipelineArtifact@1
+            condition: succeededOrFailed()
+            displayName: "Publish Report Artifacts"
+            inputs:
+              artifactName: package-diffs
+              path: $(Build.ArtifactStagingDirectory)
 
-      - script: |
-          pip install setuptools wheel
-          pip install doc-warden
-          ward scan -d $(Build.SourcesDirectory) -c $(Build.SourcesDirectory)/.docsettings.yml
-        displayName: "Verify Readmes"
+          - script: |
+              pip install setuptools wheel
+              pip install doc-warden
+              ward scan -d $(Build.SourcesDirectory) -c $(Build.SourcesDirectory)/.docsettings.yml
+            displayName: "Verify Readmes"
 
-      - script: |
-          npm ci
-        workingDirectory: $(System.DefaultWorkingDirectory)/eng/tools/analyze-deps
-        displayName: "Install tool dependencies"
+          - script: |
+              npm ci
+            workingDirectory: $(System.DefaultWorkingDirectory)/eng/tools/analyze-deps
+            displayName: "Install tool dependencies"
 
-      - script: |
-          node index.js --verbose --out "$(Build.ArtifactStagingDirectory)/dependencies.html"
-        workingDirectory: $(System.DefaultWorkingDirectory)/eng/tools/analyze-deps
-        displayName: "Analyze library dependencies"
+          - script: |
+              node index.js --verbose --out "$(Build.ArtifactStagingDirectory)/dependencies.html"
+            workingDirectory: $(System.DefaultWorkingDirectory)/eng/tools/analyze-deps
+            displayName: "Analyze library dependencies"
 
-      - script: |
-          node common/scripts/install-run-rush.js install
-        displayName: "Install library dependencies"
+          - script: |
+              node common/scripts/install-run-rush.js install
+            displayName: "Install library dependencies"
 
-      - script: |
-          node eng/tools/rush-runner.js lint "${{parameters.ServiceDirectory}}"
-        displayName: "Lint libraries"
+          - script: |
+              node eng/tools/rush-runner.js lint "${{parameters.ServiceDirectory}}"
+            displayName: "Lint libraries"
 
-      # It's important for performance to pass "sdk" as "sourceFolder" rather than as a prefix in "contents".
-      # The task first enumerates all files under "sourceFolder", then matches them against the "contents" pattern.
-      - task: CopyFiles@2
-        inputs:
-          sourceFolder: sdk
-          contents: "**/**/*lintReport.html"
-          targetFolder: $(Build.ArtifactStagingDirectory)
-          flattenFolders: true
-        displayName: "Copy lint reports"
+          # It's important for performance to pass "sdk" as "sourceFolder" rather than as a prefix in "contents".
+          # The task first enumerates all files under "sourceFolder", then matches them against the "contents" pattern.
+          - task: CopyFiles@2
+            inputs:
+              sourceFolder: sdk
+              contents: "**/**/*lintReport.html"
+              targetFolder: $(Build.ArtifactStagingDirectory)
+              flattenFolders: true
+            displayName: "Copy lint reports"
 
-      - task: PublishPipelineArtifact@1
-        condition: succeededOrFailed()
-        displayName: "Publish Report Artifacts"
-        inputs:
-          artifactName: reports
-          path: $(Build.ArtifactStagingDirectory)
+          - task: PublishPipelineArtifact@1
+            condition: succeededOrFailed()
+            displayName: "Publish Report Artifacts"
+            inputs:
+              artifactName: reports
+              path: $(Build.ArtifactStagingDirectory)
 
-      - script: |
-          node eng/tools/rush-runner.js audit "${{parameters.ServiceDirectory}}"
-        condition: and(succeeded(), eq(variables['RunNpmAudit'], 'true'))
-        displayName: "Audit libraries"
+          - script: |
+              node eng/tools/rush-runner.js audit "${{parameters.ServiceDirectory}}"
+            condition: and(succeeded(), eq(variables['RunNpmAudit'], 'true'))
+            displayName: "Audit libraries"
 
-      - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-        # ComponentGovernance is currently unable to run on pull requests of public projects. Running on non-PR
-        # builds should be sufficient.
-        condition: and(succeededOrFailed(), ne(variables['Build.Reason'], 'PullRequest'))
-        displayName: "Component Detection"
+          - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+            # ComponentGovernance is currently unable to run on pull requests of public projects. Running on non-PR
+            # builds should be sufficient.
+            condition: and(succeededOrFailed(), ne(variables['Build.Reason'], 'PullRequest'))
+            displayName: "Component Detection"
 
   # Only run tests if the matrix has entries
   - ${{ if eq(parameters.RunUnitTests, 'true') }}:
