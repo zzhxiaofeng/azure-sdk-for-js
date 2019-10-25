@@ -1,5 +1,5 @@
 parameters:
-  RunUnitTests: true
+  RunUnitTests: false
   Artifacts: []
   ServiceDirectory: not-specified
   DocDirectory: ""
