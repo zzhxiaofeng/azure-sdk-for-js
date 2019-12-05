@@ -1815,6 +1815,58 @@ export const ExtendedResourceProperties: msRest.CompositeMapper = {
   }
 };
 
+export const ThroughputSettingsGetPropertiesResource: msRest.CompositeMapper = {
+  serializedName: "ThroughputSettingsGetProperties_resource",
+  type: {
+    name: "Composite",
+    className: "ThroughputSettingsGetPropertiesResource",
+    modelProperties: {
+      throughput: {
+        required: true,
+        serializedName: "throughput",
+        type: {
+          name: "Number"
+        }
+      },
+      minimumThroughput: {
+        readOnly: true,
+        serializedName: "minimumThroughput",
+        type: {
+          name: "String"
+        }
+      },
+      offerReplacePending: {
+        readOnly: true,
+        serializedName: "offerReplacePending",
+        type: {
+          name: "String"
+        }
+      },
+      _rid: {
+        readOnly: true,
+        serializedName: "_rid",
+        type: {
+          name: "String"
+        }
+      },
+      _ts: {
+        readOnly: true,
+        serializedName: "_ts",
+        type: {
+          name: "Object"
+        }
+      },
+      _etag: {
+        readOnly: true,
+        serializedName: "_etag",
+        type: {
+          name: "String"
+        }
+      }
+    }
+  }
+};
+
 export const ThroughputSettingsGetResults: msRest.CompositeMapper = {
   serializedName: "ThroughputSettingsGetResults",
   type: {
@@ -1822,25 +1874,11 @@ export const ThroughputSettingsGetResults: msRest.CompositeMapper = {
     className: "ThroughputSettingsGetResults",
     modelProperties: {
       ...ARMResourceProperties.type.modelProperties,
-      throughput: {
-        required: true,
-        serializedName: "properties.throughput",
+      resource: {
+        serializedName: "properties.resource",
         type: {
-          name: "Number"
-        }
-      },
-      minimumThroughput: {
-        readOnly: true,
-        serializedName: "properties.minimumThroughput",
-        type: {
-          name: "String"
-        }
-      },
-      offerReplacePending: {
-        readOnly: true,
-        serializedName: "properties.offerReplacePending",
-        type: {
-          name: "String"
+          name: "Composite",
+          className: "ThroughputSettingsGetPropertiesResource"
         }
       }
     }
@@ -3423,6 +3461,64 @@ export const PartitionMetric: msRest.CompositeMapper = {
   }
 };
 
+export const NotebookWorkspaceCreateParameters: msRest.CompositeMapper = {
+  serializedName: "NotebookWorkspaceCreateParameters",
+  type: {
+    name: "Composite",
+    className: "NotebookWorkspaceCreateParameters",
+    modelProperties: {
+      ...ARMProxyResource.type.modelProperties
+    }
+  }
+};
+
+export const NotebookWorkspace: msRest.CompositeMapper = {
+  serializedName: "NotebookWorkspace",
+  type: {
+    name: "Composite",
+    className: "NotebookWorkspace",
+    modelProperties: {
+      ...ARMProxyResource.type.modelProperties,
+      notebookServerEndpoint: {
+        readOnly: true,
+        serializedName: "properties.notebookServerEndpoint",
+        type: {
+          name: "String"
+        }
+      },
+      status: {
+        readOnly: true,
+        serializedName: "properties.status",
+        type: {
+          name: "String"
+        }
+      }
+    }
+  }
+};
+
+export const NotebookWorkspaceConnectionInfoResult: msRest.CompositeMapper = {
+  serializedName: "NotebookWorkspaceConnectionInfoResult",
+  type: {
+    name: "Composite",
+    className: "NotebookWorkspaceConnectionInfoResult",
+    modelProperties: {
+      authToken: {
+        serializedName: "authToken",
+        type: {
+          name: "String"
+        }
+      },
+      notebookServerEndpoint: {
+        serializedName: "notebookServerEndpoint",
+        type: {
+          name: "String"
+        }
+      }
+    }
+  }
+};
+
 export const PrivateLinkResource: msRest.CompositeMapper = {
   serializedName: "PrivateLinkResource",
   type: {
@@ -4069,6 +4165,28 @@ export const GremlinGraphListResult: msRest.CompositeMapper = {
             type: {
               name: "Composite",
               className: "GremlinGraphGetResults"
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const NotebookWorkspaceListResult: msRest.CompositeMapper = {
+  serializedName: "NotebookWorkspaceListResult",
+  type: {
+    name: "Composite",
+    className: "NotebookWorkspaceListResult",
+    modelProperties: {
+      value: {
+        serializedName: "",
+        type: {
+          name: "Sequence",
+          element: {
+            type: {
+              name: "Composite",
+              className: "NotebookWorkspace"
             }
           }
         }

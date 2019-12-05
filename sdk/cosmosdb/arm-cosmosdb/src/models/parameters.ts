@@ -187,6 +187,18 @@ export const nextPageLink: msRest.OperationURLParameter = {
   },
   skipEncoding: true
 };
+export const notebookWorkspaceName: msRest.OperationURLParameter = {
+  parameterPath: "notebookWorkspaceName",
+  mapper: {
+    required: true,
+    isConstant: true,
+    serializedName: "notebookWorkspaceName",
+    defaultValue: 'default',
+    type: {
+      name: "String"
+    }
+  }
+};
 export const partitionKeyRangeId: msRest.OperationURLParameter = {
   parameterPath: "partitionKeyRangeId",
   mapper: {

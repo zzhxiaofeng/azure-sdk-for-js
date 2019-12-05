@@ -1060,9 +1060,9 @@ export interface ExtendedResourceProperties {
 }
 
 /**
- * An Azure Cosmos DB resource throughput.
+ * An interface representing ThroughputSettingsGetPropertiesResource.
  */
-export interface ThroughputSettingsGetResults extends ARMResourceProperties {
+export interface ThroughputSettingsGetPropertiesResource {
   /**
    * Value of the Cosmos DB resource throughput
    */
@@ -1077,6 +1077,29 @@ export interface ThroughputSettingsGetResults extends ARMResourceProperties {
    * **NOTE: This property will not be serialized. It can only be populated by the server.**
    */
   readonly offerReplacePending?: string;
+  /**
+   * A system generated property. A unique identifier.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly _rid?: string;
+  /**
+   * A system generated property that denotes the last updated timestamp of the resource.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly _ts?: any;
+  /**
+   * A system generated property representing the resource etag required for optimistic concurrency
+   * control.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly _etag?: string;
+}
+
+/**
+ * An Azure Cosmos DB resource throughput.
+ */
+export interface ThroughputSettingsGetResults extends ARMResourceProperties {
+  resource?: ThroughputSettingsGetPropertiesResource;
 }
 
 /**
@@ -1997,6 +2020,43 @@ export interface PartitionMetric extends Metric {
 }
 
 /**
+ * Parameters to create a notebook workspace resource
+ */
+export interface NotebookWorkspaceCreateParameters extends ARMProxyResource {
+}
+
+/**
+ * A notebook workspace resource
+ */
+export interface NotebookWorkspace extends ARMProxyResource {
+  /**
+   * Specifies the endpoint of Notebook server.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly notebookServerEndpoint?: string;
+  /**
+   * Status of the notebook workspace. Possible values are: Creating, Online, Deleting, Failed,
+   * Updating.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly status?: string;
+}
+
+/**
+ * The connection info for the given notebook workspace
+ */
+export interface NotebookWorkspaceConnectionInfoResult {
+  /**
+   * Specifies auth token used for connecting to Notebook server (uses token-based auth).
+   */
+  authToken?: string;
+  /**
+   * Specifies the endpoint of Notebook server.
+   */
+  notebookServerEndpoint?: string;
+}
+
+/**
  * A private link resource
  */
 export interface PrivateLinkResource extends ARMProxyResource {
@@ -2324,6 +2384,14 @@ export interface GremlinDatabaseListResult extends Array<GremlinDatabaseGetResul
  * @extends Array<GremlinGraphGetResults>
  */
 export interface GremlinGraphListResult extends Array<GremlinGraphGetResults> {
+}
+
+/**
+ * @interface
+ * A list of notebook workspace resources
+ * @extends Array<NotebookWorkspace>
+ */
+export interface NotebookWorkspaceListResult extends Array<NotebookWorkspace> {
 }
 
 /**
@@ -4633,6 +4701,106 @@ export type GremlinResourcesBeginUpdateGremlinGraphThroughputResponse = Throughp
        * The response body as parsed JSON or XML
        */
       parsedBody: ThroughputSettingsGetResults;
+    };
+};
+
+/**
+ * Contains response data for the listByDatabaseAccount operation.
+ */
+export type NotebookWorkspacesListByDatabaseAccountResponse = NotebookWorkspaceListResult & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: NotebookWorkspaceListResult;
+    };
+};
+
+/**
+ * Contains response data for the get operation.
+ */
+export type NotebookWorkspacesGetResponse = NotebookWorkspace & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: NotebookWorkspace;
+    };
+};
+
+/**
+ * Contains response data for the create operation.
+ */
+export type NotebookWorkspacesCreateResponse = NotebookWorkspace & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: NotebookWorkspace;
+    };
+};
+
+/**
+ * Contains response data for the getConnectionInfo operation.
+ */
+export type NotebookWorkspacesGetConnectionInfoResponse = NotebookWorkspaceConnectionInfoResult & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: NotebookWorkspaceConnectionInfoResult;
+    };
+};
+
+/**
+ * Contains response data for the beginCreate operation.
+ */
+export type NotebookWorkspacesBeginCreateResponse = NotebookWorkspace & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: NotebookWorkspace;
     };
 };
 
