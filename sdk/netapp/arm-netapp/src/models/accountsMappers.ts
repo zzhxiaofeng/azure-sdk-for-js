@@ -8,6 +8,7 @@
 
 export {
   ActiveDirectory,
+  AuthorizeRequest,
   BaseResource,
   CapacityPool,
   CapacityPoolPatch,
@@ -16,7 +17,6 @@ export {
   NetAppAccount,
   NetAppAccountList,
   NetAppAccountPatch,
-  ReplicationObject,
   Snapshot,
   SnapshotPatch,
   Volume,

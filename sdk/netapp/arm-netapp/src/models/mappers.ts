@@ -675,43 +675,6 @@ export const VolumePropertiesExportPolicy: msRest.CompositeMapper = {
   }
 };
 
-export const ReplicationObject: msRest.CompositeMapper = {
-  serializedName: "replicationObject",
-  type: {
-    name: "Composite",
-    className: "ReplicationObject",
-    modelProperties: {
-      replicationId: {
-        serializedName: "replicationId",
-        type: {
-          name: "String"
-        }
-      },
-      endpointType: {
-        required: true,
-        serializedName: "endpointType",
-        type: {
-          name: "String"
-        }
-      },
-      replicationSchedule: {
-        required: true,
-        serializedName: "replicationSchedule",
-        type: {
-          name: "String"
-        }
-      },
-      remoteVolumeResourceId: {
-        required: true,
-        serializedName: "remoteVolumeResourceId",
-        type: {
-          name: "String"
-        }
-      }
-    }
-  }
-};
-
 export const VolumePropertiesDataProtection: msRest.CompositeMapper = {
   serializedName: "volumeProperties_dataProtection",
   type: {
@@ -721,8 +684,7 @@ export const VolumePropertiesDataProtection: msRest.CompositeMapper = {
       replication: {
         serializedName: "replication",
         type: {
-          name: "Composite",
-          className: "ReplicationObject"
+          name: "Object"
         }
       }
     }
@@ -884,6 +846,100 @@ export const Volume: msRest.CompositeMapper = {
         type: {
           name: "Composite",
           className: "VolumePropertiesDataProtection"
+        }
+      },
+      isRestoring: {
+        serializedName: "properties.isRestoring",
+        type: {
+          name: "Boolean"
+        }
+      }
+    }
+  }
+};
+
+export const ReplicationObject: msRest.CompositeMapper = {
+  serializedName: "replicationObject",
+  type: {
+    name: "Composite",
+    className: "ReplicationObject",
+    modelProperties: {
+      replicationId: {
+        serializedName: "replicationId",
+        type: {
+          name: "String"
+        }
+      },
+      endpointType: {
+        serializedName: "endpointType",
+        type: {
+          name: "String"
+        }
+      },
+      replicationSchedule: {
+        required: true,
+        serializedName: "replicationSchedule",
+        type: {
+          name: "String"
+        }
+      },
+      ownerId: {
+        serializedName: "ownerId",
+        type: {
+          name: "String"
+        }
+      },
+      remoteVolumeResourceId: {
+        required: true,
+        serializedName: "remoteVolumeResourceId",
+        type: {
+          name: "String"
+        }
+      },
+      remoteVolumeRegion: {
+        serializedName: "remoteVolumeRegion",
+        type: {
+          name: "String"
+        }
+      }
+    }
+  }
+};
+
+export const ReplicationStatus: msRest.CompositeMapper = {
+  serializedName: "replicationStatus",
+  type: {
+    name: "Composite",
+    className: "ReplicationStatus",
+    modelProperties: {
+      healthy: {
+        serializedName: "healthy",
+        type: {
+          name: "Boolean"
+        }
+      },
+      relationshipStatus: {
+        serializedName: "relationshipStatus",
+        type: {
+          name: "String"
+        }
+      },
+      mirrorState: {
+        serializedName: "mirrorState",
+        type: {
+          name: "String"
+        }
+      },
+      totalProgress: {
+        serializedName: "totalProgress",
+        type: {
+          name: "String"
+        }
+      },
+      errorMessage: {
+        serializedName: "errorMessage",
+        type: {
+          name: "String"
         }
       }
     }
@@ -1209,6 +1265,22 @@ export const SnapshotPatch: msRest.CompositeMapper = {
               name: "String"
             }
           }
+        }
+      }
+    }
+  }
+};
+
+export const AuthorizeRequest: msRest.CompositeMapper = {
+  serializedName: "authorizeRequest",
+  type: {
+    name: "Composite",
+    className: "AuthorizeRequest",
+    modelProperties: {
+      remoteVolumeResourceId: {
+        serializedName: "remoteVolumeResourceId",
+        type: {
+          name: "String"
         }
       }
     }

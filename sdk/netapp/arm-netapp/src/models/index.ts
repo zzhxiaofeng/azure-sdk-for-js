@@ -416,29 +416,6 @@ export interface VolumePropertiesExportPolicy {
 }
 
 /**
- * Replication properties
- */
-export interface ReplicationObject {
-  /**
-   * replicationId. Id
-   */
-  replicationId?: string;
-  /**
-   * endpointType. Indicates whether the local volume is the source or destination for the Volume
-   * Replication
-   */
-  endpointType: string;
-  /**
-   * replicationSchedule. Schedule
-   */
-  replicationSchedule: string;
-  /**
-   * remoteVolumeResourceId. The resource ID of the remote volume.
-   */
-  remoteVolumeResourceId: string;
-}
-
-/**
  * DataProtection volume, can have a replication object
  * @summary DataProtection
  */
@@ -446,7 +423,7 @@ export interface VolumePropertiesDataProtection {
   /**
    * Replication. Replication properties
    */
-  replication?: ReplicationObject;
+  replication?: any;
 }
 
 /**
@@ -536,6 +513,66 @@ export interface Volume extends BaseResource {
    * DataProtection. DataProtection volume, can have a replication object
    */
   dataProtection?: VolumePropertiesDataProtection;
+  /**
+   * Restoring
+   */
+  isRestoring?: boolean;
+}
+
+/**
+ * Replication properties
+ */
+export interface ReplicationObject {
+  /**
+   * Id
+   */
+  replicationId?: string;
+  /**
+   * Indicates whether the local volume is the source or destination for the Volume Replication
+   */
+  endpointType?: string;
+  /**
+   * Schedule
+   */
+  replicationSchedule: string;
+  /**
+   * Id used to identify the owner of the resource
+   */
+  ownerId?: string;
+  /**
+   * The resource ID of the remote volume.
+   */
+  remoteVolumeResourceId: string;
+  /**
+   * The remote region for the other end of the Volume Replication.
+   */
+  remoteVolumeRegion?: string;
+}
+
+/**
+ * Replication status
+ */
+export interface ReplicationStatus {
+  /**
+   * Replication health check
+   */
+  healthy?: boolean;
+  /**
+   * Status of the mirror relationship
+   */
+  relationshipStatus?: string;
+  /**
+   * The status of the replication
+   */
+  mirrorState?: string;
+  /**
+   * The progress of the replication
+   */
+  totalProgress?: string;
+  /**
+   * Displays error message if the replication is in an error state
+   */
+  errorMessage?: string;
 }
 
 /**
@@ -721,6 +758,26 @@ export interface SnapshotPatch extends BaseResource {
    * Resource tags
    */
   tags?: { [propertyName: string]: string };
+}
+
+/**
+ * Authorize request
+ */
+export interface AuthorizeRequest extends BaseResource {
+  /**
+   * Resource id
+   */
+  remoteVolumeResourceId?: string;
+}
+
+/**
+ * Optional Parameters.
+ */
+export interface VolumesAuthorizeReplicationOptionalParams extends msRest.RequestOptionsBase {
+  /**
+   * Resource id
+   */
+  remoteVolumeResourceId?: string;
 }
 
 /**
@@ -1153,6 +1210,26 @@ export type VolumesUpdateResponse = Volume & {
        * The response body as parsed JSON or XML
        */
       parsedBody: Volume;
+    };
+};
+
+/**
+ * Contains response data for the replicationStatusMethod operation.
+ */
+export type VolumesReplicationStatusMethodResponse = ReplicationStatus & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: ReplicationStatus;
     };
 };
 
