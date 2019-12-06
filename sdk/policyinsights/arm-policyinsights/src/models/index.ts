@@ -141,16 +141,19 @@ export interface RemediationFilters {
 export interface RemediationDeploymentSummary {
   /**
    * The number of deployments required by the remediation.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
    */
-  totalDeployments?: number;
+  readonly totalDeployments?: number;
   /**
    * The number of deployments required by the remediation that have succeeded.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
    */
-  successfulDeployments?: number;
+  readonly successfulDeployments?: number;
   /**
    * The number of deployments required by the remediation that have failed.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
    */
-  failedDeployments?: number;
+  readonly failedDeployments?: number;
 }
 
 /**
@@ -166,6 +169,11 @@ export interface Remediation extends BaseResource {
    * Required when the policy assignment being remediated assigns a policy set definition.
    */
   policyDefinitionReferenceId?: string;
+  /**
+   * The way resources to remediate are discovered. Defaults to ExistingNonCompliant if not
+   * specified. Possible values include: 'ExistingNonCompliant', 'ReEvaluateCompliance'
+   */
+  resourceDiscoveryMode?: ResourceDiscoveryMode;
   /**
    * The status of the remediation.
    * **NOTE: This property will not be serialized. It can only be populated by the server.**
@@ -187,8 +195,9 @@ export interface Remediation extends BaseResource {
   filters?: RemediationFilters;
   /**
    * The deployment status summary for all deployments created by the remediation.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
    */
-  deploymentStatus?: RemediationDeploymentSummary;
+  readonly deploymentStatus?: RemediationDeploymentSummary;
   /**
    * The ID of the remediation.
    * **NOTE: This property will not be serialized. It can only be populated by the server.**
@@ -435,24 +444,6 @@ export interface PolicyEvent {
 }
 
 /**
- * Query results.
- */
-export interface PolicyEventsQueryResults {
-  /**
-   * OData context string; used by OData clients to resolve type information based on metadata.
-   */
-  odatacontext?: string;
-  /**
-   * OData entity count; represents the number of policy event records returned.
-   */
-  odatacount?: number;
-  /**
-   * Query results.
-   */
-  value?: PolicyEvent[];
-}
-
-/**
  * Evaluation details of policy language expressions.
  */
 export interface ExpressionEvaluationDetails {
@@ -544,7 +535,7 @@ export interface PolicyState {
   effectiveParameters?: string;
   /**
    * Flag which states whether the resource is compliant against the policy assignment it was
-   * evaluated against.
+   * evaluated against. This property is deprecated; please use ComplianceState instead.
    */
   isCompliant?: boolean;
   /**
@@ -634,36 +625,37 @@ export interface PolicyState {
    */
   policyEvaluationDetails?: PolicyEvaluationDetails;
   /**
+   * Policy definition group names.
+   */
+  policyDefinitionGroupNames?: string[];
+  /**
    * Describes unknown properties. The value of an unknown property can be of "any" type.
    */
   [property: string]: any;
 }
 
 /**
- * Query results.
+ * The compliance state rollup.
  */
-export interface PolicyStatesQueryResults {
+export interface ComplianceDetail {
   /**
-   * OData context string; used by OData clients to resolve type information based on metadata.
+   * The compliance state.
    */
-  odatacontext?: string;
+  complianceState?: string;
   /**
-   * OData entity count; represents the number of policy state records returned.
+   * Summarized count value for this compliance state.
    */
-  odatacount?: number;
-  /**
-   * Query results.
-   */
-  value?: PolicyState[];
+  count?: number;
 }
 
 /**
- * Non-compliance summary on a particular summary level.
+ * Compliance summary on a particular summary level.
  */
 export interface SummaryResults {
   /**
    * HTTP POST URI for queryResults action on Microsoft.PolicyInsights to retrieve raw results for
-   * the non-compliance summary.
+   * the compliance summary. This property will not be available by default in future API versions,
+   * but could be queried explicitly.
    */
   queryResultsUri?: string;
   /**
@@ -674,6 +666,19 @@ export interface SummaryResults {
    * Number of non-compliant policies.
    */
   nonCompliantPolicies?: number;
+  /**
+   * The resources summary at this level.
+   */
+  resourceDetails?: ComplianceDetail[];
+  /**
+   * The policy artifact summary at this level. For query scope level, it represents policy
+   * assignment summary. For policy assignment level, it represents policy definitions summary.
+   */
+  policyDetails?: ComplianceDetail[];
+  /**
+   * The policy definition group summary at this level.
+   */
+  policyGroupDetails?: ComplianceDetail[];
 }
 
 /**
@@ -689,11 +694,29 @@ export interface PolicyDefinitionSummary {
    */
   policyDefinitionReferenceId?: string;
   /**
+   * Policy definition group names.
+   */
+  policyDefinitionGroupNames?: string[];
+  /**
    * Policy effect, i.e. policy definition action.
    */
   effect?: string;
   /**
-   * Non-compliance summary for the policy definition.
+   * Compliance summary for the policy definition.
+   */
+  results?: SummaryResults;
+}
+
+/**
+ * Policy definition group summary.
+ */
+export interface PolicyGroupSummary {
+  /**
+   * Policy group name.
+   */
+  policyGroupName?: string;
+  /**
+   * Compliance summary for the policy definition group.
    */
   results?: SummaryResults;
 }
@@ -711,13 +734,17 @@ export interface PolicyAssignmentSummary {
    */
   policySetDefinitionId?: string;
   /**
-   * Non-compliance summary for the policy assignment.
+   * Compliance summary for the policy assignment.
    */
   results?: SummaryResults;
   /**
    * Policy definitions summary.
    */
   policyDefinitions?: PolicyDefinitionSummary[];
+  /**
+   * Policy definition group summary.
+   */
+  policyGroups?: PolicyGroupSummary[];
 }
 
 /**
@@ -733,7 +760,7 @@ export interface Summary {
    */
   odatacontext?: string;
   /**
-   * Non-compliance summary for all policy assignments.
+   * Compliance summary for all policy assignments.
    */
   results?: SummaryResults;
   /**
@@ -808,6 +835,118 @@ export interface OperationsListResults {
    * List of available operations.
    */
   value?: Operation[];
+}
+
+/**
+ * Policy metadata resource definition.
+ */
+export interface PolicyMetadata {
+  /**
+   * The policy metadata identifier.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly metadataId?: string;
+  /**
+   * The category of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly category?: string;
+  /**
+   * The title of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly title?: string;
+  /**
+   * The owner of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly owner?: string;
+  /**
+   * Url for getting additional content about the resource metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly additionalContentUrl?: string;
+  /**
+   * Additional metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly metadata?: any;
+  /**
+   * The description of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly description?: string;
+  /**
+   * The requirements of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly requirements?: string;
+  /**
+   * The ID of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly id?: string;
+  /**
+   * The type of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly type?: string;
+  /**
+   * The name of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly name?: string;
+}
+
+/**
+ * Slim version of policy metadata resource definition, excluding properties with large strings
+ */
+export interface SlimPolicyMetadata {
+  /**
+   * The policy metadata identifier.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly metadataId?: string;
+  /**
+   * The category of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly category?: string;
+  /**
+   * The title of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly title?: string;
+  /**
+   * The owner of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly owner?: string;
+  /**
+   * Url for getting additional content about the resource metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly additionalContentUrl?: string;
+  /**
+   * Additional metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly metadata?: any;
+  /**
+   * The ID of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly id?: string;
+  /**
+   * The type of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly type?: string;
+  /**
+   * The name of the policy metadata.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly name?: string;
 }
 
 /**
@@ -1214,6 +1353,16 @@ export interface PolicyStatesSummarizeForResourceGroupLevelPolicyAssignmentOptio
 }
 
 /**
+ * Optional Parameters.
+ */
+export interface PolicyMetadataListOptionalParams extends msRest.RequestOptionsBase {
+  /**
+   * Additional parameters for the operation
+   */
+  queryOptions?: QueryOptions;
+}
+
+/**
  * An interface representing PolicyInsightsClientOptions.
  */
 export interface PolicyInsightsClientOptions extends AzureServiceClientOptions {
@@ -1258,6 +1407,67 @@ export interface RemediationListResult extends Array<Remediation> {
    */
   readonly nextLink?: string;
 }
+
+/**
+ * @interface
+ * Query results.
+ * @extends Array<PolicyEvent>
+ */
+export interface PolicyEventsQueryResults extends Array<PolicyEvent> {
+  /**
+   * OData context string; used by OData clients to resolve type information based on metadata.
+   */
+  odatacontext?: string;
+  /**
+   * OData entity count; represents the number of policy event records returned.
+   */
+  odatacount?: number;
+  /**
+   * Odata next link; URL to get the next set of results.
+   */
+  odatanextLink?: string;
+}
+
+/**
+ * @interface
+ * Query results.
+ * @extends Array<PolicyState>
+ */
+export interface PolicyStatesQueryResults extends Array<PolicyState> {
+  /**
+   * OData context string; used by OData clients to resolve type information based on metadata.
+   */
+  odatacontext?: string;
+  /**
+   * OData entity count; represents the number of policy state records returned.
+   */
+  odatacount?: number;
+  /**
+   * Odata next link; URL to get the next set of results.
+   */
+  odatanextLink?: string;
+}
+
+/**
+ * @interface
+ * Collection of policy metadata resources.
+ * @extends Array<SlimPolicyMetadata>
+ */
+export interface PolicyMetadataCollection extends Array<SlimPolicyMetadata> {
+  /**
+   * The URL to get the next set of results.
+   * **NOTE: This property will not be serialized. It can only be populated by the server.**
+   */
+  readonly nextLink?: string;
+}
+
+/**
+ * Defines values for ResourceDiscoveryMode.
+ * Possible values include: 'ExistingNonCompliant', 'ReEvaluateCompliance'
+ * @readonly
+ * @enum {string}
+ */
+export type ResourceDiscoveryMode = 'ExistingNonCompliant' | 'ReEvaluateCompliance';
 
 /**
  * Defines values for PolicyStatesResource.
@@ -2228,14 +2438,9 @@ export type PolicyEventsListQueryResultsForResourceGroupLevelPolicyAssignmentRes
 };
 
 /**
- * Contains response data for the getMetadata operation.
+ * Contains response data for the listQueryResultsForManagementGroupNext operation.
  */
-export type PolicyEventsGetMetadataResponse = {
-  /**
-   * The parsed response body.
-   */
-  body: string;
-
+export type PolicyEventsListQueryResultsForManagementGroupNextResponse = PolicyEventsQueryResults & {
   /**
    * The underlying HTTP response.
    */
@@ -2248,7 +2453,149 @@ export type PolicyEventsGetMetadataResponse = {
       /**
        * The response body as parsed JSON or XML
        */
-      parsedBody: string;
+      parsedBody: PolicyEventsQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForSubscriptionNext operation.
+ */
+export type PolicyEventsListQueryResultsForSubscriptionNextResponse = PolicyEventsQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyEventsQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForResourceGroupNext operation.
+ */
+export type PolicyEventsListQueryResultsForResourceGroupNextResponse = PolicyEventsQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyEventsQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForResourceNext operation.
+ */
+export type PolicyEventsListQueryResultsForResourceNextResponse = PolicyEventsQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyEventsQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForPolicySetDefinitionNext operation.
+ */
+export type PolicyEventsListQueryResultsForPolicySetDefinitionNextResponse = PolicyEventsQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyEventsQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForPolicyDefinitionNext operation.
+ */
+export type PolicyEventsListQueryResultsForPolicyDefinitionNextResponse = PolicyEventsQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyEventsQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForSubscriptionLevelPolicyAssignmentNext
+ * operation.
+ */
+export type PolicyEventsListQueryResultsForSubscriptionLevelPolicyAssignmentNextResponse = PolicyEventsQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyEventsQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForResourceGroupLevelPolicyAssignmentNext
+ * operation.
+ */
+export type PolicyEventsListQueryResultsForResourceGroupLevelPolicyAssignmentNextResponse = PolicyEventsQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyEventsQueryResults;
     };
 };
 
@@ -2573,14 +2920,9 @@ export type PolicyStatesSummarizeForResourceGroupLevelPolicyAssignmentResponse =
 };
 
 /**
- * Contains response data for the getMetadata operation.
+ * Contains response data for the listQueryResultsForManagementGroupNext operation.
  */
-export type PolicyStatesGetMetadataResponse = {
-  /**
-   * The parsed response body.
-   */
-  body: string;
-
+export type PolicyStatesListQueryResultsForManagementGroupNextResponse = PolicyStatesQueryResults & {
   /**
    * The underlying HTTP response.
    */
@@ -2593,7 +2935,149 @@ export type PolicyStatesGetMetadataResponse = {
       /**
        * The response body as parsed JSON or XML
        */
-      parsedBody: string;
+      parsedBody: PolicyStatesQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForSubscriptionNext operation.
+ */
+export type PolicyStatesListQueryResultsForSubscriptionNextResponse = PolicyStatesQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyStatesQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForResourceGroupNext operation.
+ */
+export type PolicyStatesListQueryResultsForResourceGroupNextResponse = PolicyStatesQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyStatesQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForResourceNext operation.
+ */
+export type PolicyStatesListQueryResultsForResourceNextResponse = PolicyStatesQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyStatesQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForPolicySetDefinitionNext operation.
+ */
+export type PolicyStatesListQueryResultsForPolicySetDefinitionNextResponse = PolicyStatesQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyStatesQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForPolicyDefinitionNext operation.
+ */
+export type PolicyStatesListQueryResultsForPolicyDefinitionNextResponse = PolicyStatesQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyStatesQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForSubscriptionLevelPolicyAssignmentNext
+ * operation.
+ */
+export type PolicyStatesListQueryResultsForSubscriptionLevelPolicyAssignmentNextResponse = PolicyStatesQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyStatesQueryResults;
+    };
+};
+
+/**
+ * Contains response data for the listQueryResultsForResourceGroupLevelPolicyAssignmentNext
+ * operation.
+ */
+export type PolicyStatesListQueryResultsForResourceGroupLevelPolicyAssignmentNextResponse = PolicyStatesQueryResults & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyStatesQueryResults;
     };
 };
 
@@ -2614,5 +3098,65 @@ export type OperationsListResponse = OperationsListResults & {
        * The response body as parsed JSON or XML
        */
       parsedBody: OperationsListResults;
+    };
+};
+
+/**
+ * Contains response data for the getResource operation.
+ */
+export type PolicyMetadataGetResourceResponse = PolicyMetadata & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyMetadata;
+    };
+};
+
+/**
+ * Contains response data for the list operation.
+ */
+export type PolicyMetadataListResponse = PolicyMetadataCollection & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyMetadataCollection;
+    };
+};
+
+/**
+ * Contains response data for the listNext operation.
+ */
+export type PolicyMetadataListNextResponse = PolicyMetadataCollection & {
+  /**
+   * The underlying HTTP response.
+   */
+  _response: msRest.HttpResponse & {
+      /**
+       * The response body as text (string format)
+       */
+      bodyAsText: string;
+
+      /**
+       * The response body as parsed JSON or XML
+       */
+      parsedBody: PolicyMetadataCollection;
     };
 };
