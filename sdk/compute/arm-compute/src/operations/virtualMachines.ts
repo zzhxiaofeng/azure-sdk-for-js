@@ -198,7 +198,8 @@ export class VirtualMachines {
   }
 
   /**
-   * Sets the state of the virtual machine to generalized.
+   * Sets the OS state of the virtual machine to generalized. It is recommended to sysprep the
+   * virtual machine before performing this operation
    * @param resourceGroupName The name of the resource group.
    * @param vmName The name of the virtual machine.
    * @param [options] The optional parameters
