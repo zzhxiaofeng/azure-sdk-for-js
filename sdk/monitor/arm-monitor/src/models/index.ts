@@ -2399,6 +2399,24 @@ export interface MetricAlertSingleResourceMultipleMetricCriteria {
 }
 
 /**
+ * Specifies the metric alert rule criteria for a web test resource.
+ */
+export interface WebtestLocationAvailabilityCriteria {
+  /**
+   * The web test Id.
+   */
+  webTestId: string;
+  /**
+   * The Application Insights resource Id.
+   */
+  componentId: string;
+  /**
+   * The number of failed locations.
+   */
+  failedLocationCount: number;
+}
+
+/**
  * Specifies a metric dimension.
  */
 export interface MetricDimension {

@@ -4068,6 +4068,37 @@ export const MetricAlertSingleResourceMultipleMetricCriteria: msRest.CompositeMa
   }
 };
 
+export const WebtestLocationAvailabilityCriteria: msRest.CompositeMapper = {
+  serializedName: "Microsoft.Azure.Monitor.WebtestLocationAvailabilityCriteria",
+  type: {
+    name: "Composite",
+    className: "WebtestLocationAvailabilityCriteria",
+    modelProperties: {
+      webTestId: {
+        required: true,
+        serializedName: "webTestId",
+        type: {
+          name: "String"
+        }
+      },
+      componentId: {
+        required: true,
+        serializedName: "componentId",
+        type: {
+          name: "String"
+        }
+      },
+      failedLocationCount: {
+        required: true,
+        serializedName: "failedLocationCount",
+        type: {
+          name: "Number"
+        }
+      }
+    }
+  }
+};
+
 export const MetricDimension: msRest.CompositeMapper = {
   serializedName: "MetricDimension",
   type: {
