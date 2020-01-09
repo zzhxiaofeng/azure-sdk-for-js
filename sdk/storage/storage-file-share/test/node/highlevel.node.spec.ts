@@ -435,7 +435,7 @@ describe("Highlevel Node.js only", () => {
     assert.ok(downloadedData.equals(uploadedData.slice(1, partialSize + 1)));
   });
 
-  it("fileClient.download should download data failed when exceeding max stream retry requests", async () => {
+  it.only("fileClient.download should download data failed when exceeding max stream retry requests", async () => {
     recorder.skip("node", "Temp file - recorder doesn't support saving the file");
     for (let index = 0; index < 1000; index++) {
       await fileClient.uploadFile(tempFileSmall, {
