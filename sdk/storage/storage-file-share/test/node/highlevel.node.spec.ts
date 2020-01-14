@@ -542,4 +542,4 @@ describe("Highlevel Node.js only", () => {
 
     fs.unlinkSync(downloadedFilePath);
   });
-});
+}).timeout(100000000000);
